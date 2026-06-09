@@ -51,35 +51,52 @@ async function requestRecipeAPI(pathname) {
   return response.json();
 }
 
+function ingredientToText(ingredient) {
+  if (!ingredient) return "";
+
+  if (typeof ingredient === "string") {
+    return ingredient;
+  }
+
+  if (typeof ingredient === "object") {
+    return (
+      ingredient.name ||
+      ingredient.original ||
+      ingredient.text ||
+      ingredient.ingredient ||
+      ingredient.food ||
+      ingredient.title ||
+      ingredient.display ||
+      ingredient.value ||
+      JSON.stringify(ingredient)
+    );
+  }
+
+  return String(ingredient);
+}
+
 function normalizeIngredients(item) {
-  if (Array.isArray(item.ingredients)) {
-    return item.ingredients
-      .map((i) =>
-        typeof i === "string" ? i : i.name || i.original || i.text || "",
-      )
-      .filter(Boolean);
+  const rawIngredients =
+    item.ingredients ||
+    item.ingredient_list ||
+    item.extendedIngredients ||
+    item.recipeIngredient ||
+    item.recipe_ingredients ||
+    item.ingredients_list ||
+    [];
+
+  if (!Array.isArray(rawIngredients)) {
+    return [];
   }
 
-  if (Array.isArray(item.ingredient_list)) {
-    return item.ingredient_list;
-  }
-
-  if (Array.isArray(item.extendedIngredients)) {
-    return item.extendedIngredients
-      .map((i) => i.original || i.name)
-      .filter(Boolean);
-  }
-
-  if (Array.isArray(item.recipeIngredient)) {
-    return item.recipeIngredient;
-  }
-
-  return [];
+  return rawIngredients
+    .map(ingredientToText)
+    .filter((ingredient) => ingredient && ingredient.trim() !== "");
 }
 
 function normalizeRecipe(item) {
   return {
-    id: item.id || item.recipe_id || item.uuid,
+    id: item.id || item.recipe_id || item.uuid || item.slug || item.name,
     name: item.name || item.title || "이름 없는 레시피",
     category: item.category || item.cuisine || item.meal_type || "기타",
     time: item.cook_time || item.ready_in_minutes || item.time || 30,
