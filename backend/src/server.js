@@ -51,13 +51,39 @@ async function requestRecipeAPI(pathname) {
   return response.json();
 }
 
+function normalizeIngredients(item) {
+  if (Array.isArray(item.ingredients)) {
+    return item.ingredients
+      .map((i) =>
+        typeof i === "string" ? i : i.name || i.original || i.text || "",
+      )
+      .filter(Boolean);
+  }
+
+  if (Array.isArray(item.ingredient_list)) {
+    return item.ingredient_list;
+  }
+
+  if (Array.isArray(item.extendedIngredients)) {
+    return item.extendedIngredients
+      .map((i) => i.original || i.name)
+      .filter(Boolean);
+  }
+
+  if (Array.isArray(item.recipeIngredient)) {
+    return item.recipeIngredient;
+  }
+
+  return [];
+}
+
 function normalizeRecipe(item) {
   return {
     id: item.id || item.recipe_id || item.uuid,
     name: item.name || item.title || "이름 없는 레시피",
     category: item.category || item.cuisine || item.meal_type || "기타",
     time: item.cook_time || item.ready_in_minutes || item.time || 30,
-    ingredients: item.ingredients || item.ingredient_list || [],
+    ingredients: normalizeIngredients(item),
     difficulty: item.difficulty || "보통",
     description:
       item.description ||
