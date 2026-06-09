@@ -26,3 +26,4 @@ docker compose up --build
 
 ## 배포 URL
 과제 제출 시 실제 배포 URL 작성
+- Deployed with Vercel and Render
