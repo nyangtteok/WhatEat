@@ -193,7 +193,10 @@ function App() {
                     {recipe.category} · {recipe.time}분 · {recipe.difficulty}
                   </p>
                   <p className="ingredients">
-                    재료: {recipe.ingredients.join(", ")}
+                    재료:{" "}
+                    {recipe.ingredients
+                      .map((i: any) => (typeof i === "string" ? i : i.name))
+                      .join(", ")}
                   </p>
                 </div>
                 <button onClick={() => addFavorite(recipe)}>즐겨찾기</button>
