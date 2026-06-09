@@ -19,7 +19,7 @@ type Favorite = {
   created_at?: string;
 };
 
-const API_BASE = "/api";
+const API_BASE = "https://whateat-backend.onrender.com/api";
 const RECENT_KEY = "whateat_recent_searches";
 
 function App() {
